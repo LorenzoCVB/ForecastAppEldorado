@@ -1,0 +1,9 @@
+package com.example.forecastappeldorado.model
+
+import com.google.gson.annotations.SerializedName
+
+data class Wind(
+    val deg: Int,
+    val gust: Double,
+    val speed: Double
+)
