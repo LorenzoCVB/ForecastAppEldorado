@@ -6,7 +6,9 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "search_table")
 data class Search(
-    @PrimaryKey(autoGenerate = true) val id: Int?,
     @ColumnInfo(name="city_name") val cityName: String?,
     @ColumnInfo(name="temperature") val temperature: String?
-)
+){
+    @PrimaryKey(autoGenerate = true)
+    var id = 0
+}

@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
 @Database(entities = [Search::class], version = 1)
 abstract class SearchDatabase : RoomDatabase(){
 
-    abstract fun searchDao() : SearchDao
+    abstract fun getSearchDao() : SearchDao
 
     companion object {
 

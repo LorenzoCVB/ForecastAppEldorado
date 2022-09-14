@@ -7,11 +7,16 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.get
 import com.bumptech.glide.Glide
 import com.example.forecastappeldorado.HistoryActivity
 import com.example.forecastappeldorado.R
 import com.example.forecastappeldorado.data.Search
+import com.example.forecastappeldorado.data.SearchDao
 import com.example.forecastappeldorado.data.SearchDatabase
+import com.example.forecastappeldorado.data.SearchViewModel
+import com.example.forecastappeldorado.databinding.ActivityMainBinding
 import com.example.forecastappeldorado.viewmodel.MainViewModel
 
 
@@ -27,18 +32,24 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewmodel: MainViewModel
 
     private lateinit var appDB : SearchDatabase
+    lateinit var binding : ActivityMainBinding
+
+    private lateinit var mSearchViewModel: SearchViewModel
 
     private lateinit var GET: SharedPreferences
     private lateinit var SET: SharedPreferences.Editor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         GET = getSharedPreferences(packageName, MODE_PRIVATE)
         SET = GET.edit()
 
         viewmodel = androidx.lifecycle.ViewModelProviders.of(this).get(MainViewModel::class.java)
+
+        mSearchViewModel = ViewModelProvider(this).get(SearchViewModel::class.java)
 
         var cName = GET.getString("cityName", "moscow")?.toLowerCase()
         edt_city_name.setText(cName)
@@ -93,7 +104,8 @@ class MainActivity : AppCompatActivity() {
                 tv_lat.text = data.coord.lat.toString()
                 tv_lon.text = data.coord.lon.toString()
 
-                val search = Search(null, data.name.toString(), data.main.temp.toString() + "°C")
+                val search = Search(data.name.toString(), data.main.temp.toString() + "°C")
+                mSearchViewModel.searchInsert(search)
 
 
             }
