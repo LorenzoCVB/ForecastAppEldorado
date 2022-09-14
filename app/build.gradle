@@ -63,13 +63,22 @@ dependencies {
     // GLIDE
     implementation "com.github.bumptech.glide:glide:4.12.0"
 
+    // Room components
+    implementation "androidx.room:room-ktx:2.4.3"
+    kapt "androidx.room:room-compiler:2.4.3"
+    androidTestImplementation "androidx.room:room-testing:2.4.3"
 
-    def room_version = "2.4.2"
 
-    implementation "androidx.room:room-ktx:$room_version"
-    implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.1"
+//    def room_version = "2.4.2"
+//
+//    implementation "androidx.room:room-ktx:$room_version"
+//    implementation "androidx.room:room-runtime:$room_version"
+//    annotationProcessor "androidx.room:room-compiler:$room_version"
+//    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
+//    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.1"
+//
+//    implementation 'android.arch.persistence.room:runtime:1.0.0';
+//    annotationProcessor 'android.arch.lifecycle:compiler:1.0.0';
+//    annotationProcessor 'android.arch.persistence.room:compiler:1.0.0';
 
 }

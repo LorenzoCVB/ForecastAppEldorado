@@ -1,5 +1,6 @@
 package com.example.forecastappeldorado.view
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -7,17 +8,25 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
+import com.example.forecastappeldorado.HistoryActivity
 import com.example.forecastappeldorado.R
+import com.example.forecastappeldorado.data.Search
+import com.example.forecastappeldorado.data.SearchDatabase
 import com.example.forecastappeldorado.viewmodel.MainViewModel
 
 
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewmodel: MainViewModel
+
+    private lateinit var appDB : SearchDatabase
 
     private lateinit var GET: SharedPreferences
     private lateinit var SET: SharedPreferences.Editor
@@ -34,8 +43,7 @@ class MainActivity : AppCompatActivity() {
         var cName = GET.getString("cityName", "moscow")?.toLowerCase()
         edt_city_name.setText(cName)
         viewmodel.refreshData(cName!!)
-
-        getLiveData()
+        getLiveDataAndAddToDB()
 
         swipe_refresh_layout.setOnRefreshListener {
             ll_data.visibility = View.GONE
@@ -53,18 +61,19 @@ class MainActivity : AppCompatActivity() {
             SET.putString("cityName", cityName)
             SET.apply()
             viewmodel.refreshData(cityName)
-            getLiveData()
+            getLiveDataAndAddToDB()
             Log.i(TAG, "onCreate: " + cityName)
         }
 
-        //ACESSAR BANCO E MOSTRAR TABELA NUMA RECYCLER
-        img_history.setOnClickListener {
 
+        img_history.setOnClickListener {
+            val intent = Intent(applicationContext, HistoryActivity::class.java)
+            startActivity(intent)
         }
 
     }
 
-    private fun getLiveData() {
+    private fun getLiveDataAndAddToDB() {
 
         viewmodel.weather_data.observe(this, Observer { data ->
             data?.let {
@@ -83,6 +92,9 @@ class MainActivity : AppCompatActivity() {
                 tv_wind_speed.text = data.wind.speed.toString()
                 tv_lat.text = data.coord.lat.toString()
                 tv_lon.text = data.coord.lon.toString()
+
+                val search = Search(null, data.name.toString(), data.main.temp.toString() + "°C")
+
 
             }
         })
