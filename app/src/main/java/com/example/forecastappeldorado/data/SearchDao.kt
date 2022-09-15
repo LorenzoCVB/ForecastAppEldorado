@@ -5,14 +5,14 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.forecastappeldorado.model.Search
+import com.example.forecastappeldorado.model.SearchModel
 
 @Dao
 interface SearchDao {
 
     @Query("SELECT * FROM search_table ORDER BY id ASC")
-    fun getAll():LiveData<List<Search>>
+    fun getAll():LiveData<List<SearchModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(search: Search)
+    suspend fun insert(search: SearchModel)
 }

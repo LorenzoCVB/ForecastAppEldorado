@@ -6,13 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.forecastappeldorado.R
-import com.example.forecastappeldorado.model.Search
+import com.example.forecastappeldorado.model.SearchModel
 import kotlinx.android.synthetic.main.list_history.view.*
 
 
 class ListAdapter: RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
 
-    private var searchList = ArrayList<Search>()
+    private var searchList = ArrayList<SearchModel>()
 
     class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {}
 
@@ -28,10 +28,11 @@ class ListAdapter: RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
         val currentItem = searchList[position]
         holder.itemView.list_cityName.text = currentItem.cityName
         holder.itemView.list_cityTemperature.text = currentItem.temperature
+        holder.itemView.search_date.text = currentItem.date
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateList(myList: List<Search>) {
+    fun updateList(myList: List<SearchModel>) {
         searchList.clear()
         searchList.addAll(myList)
         notifyDataSetChanged()

@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
-import com.example.forecastappeldorado.model.Search
+import com.example.forecastappeldorado.model.SearchModel
 import com.example.forecastappeldorado.data.SearchDatabase
 import com.example.forecastappeldorado.viewmodel.SearchViewModel
 import com.example.forecastappeldorado.databinding.ActivityMainBinding
@@ -17,6 +17,10 @@ import com.example.forecastappeldorado.viewmodel.MainViewModel
 
 
 import kotlinx.android.synthetic.main.activity_main.*
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 private const val TAG = "MainActivity"
 
@@ -36,6 +40,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val date = Calendar.getInstance().time
+        val formatter = SimpleDateFormat.getDateTimeInstance() //or use getDateInstance()
+        val formatedDate = formatter.format(date)
 
         GET = getSharedPreferences(packageName, MODE_PRIVATE)
         SET = GET.edit()
@@ -79,6 +87,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun getLiveDataAndAddToDB() {
 
+        val sdf = SimpleDateFormat("dd/M/yyyy")
+        val currentDate = sdf.format(Date())
+
+
         viewmodel.weather_data.observe(this, Observer { data ->
             data?.let {
                 ll_data.visibility = View.VISIBLE
@@ -97,7 +109,7 @@ class MainActivity : AppCompatActivity() {
                 tv_lat.text = data.coord.lat.toString()
                 tv_lon.text = data.coord.lon.toString()
 
-                val search = Search(data.name.toString(), data.main.temp.toString() + "°C")
+                val search = SearchModel(data.name.toString(), data.main.temp.toString() + "°C", currentDate)
                 mSearchViewModel.searchInsert(search)
 
             }
