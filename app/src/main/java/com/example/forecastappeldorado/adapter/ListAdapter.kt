@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.forecastappeldorado.R
-import com.example.forecastappeldorado.data.Search
+import com.example.forecastappeldorado.model.Search
 import kotlinx.android.synthetic.main.list_history.view.*
 
 

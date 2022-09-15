@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.forecastappeldorado.R
 import com.example.forecastappeldorado.adapter.ListAdapter
-import com.example.forecastappeldorado.data.SearchViewModel
+import com.example.forecastappeldorado.viewmodel.SearchViewModel
 import kotlinx.android.synthetic.main.activity_history.*
 
 class HistoryActivity : AppCompatActivity() {

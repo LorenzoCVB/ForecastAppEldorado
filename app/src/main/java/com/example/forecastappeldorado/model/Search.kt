@@ -1,4 +1,4 @@
-package com.example.forecastappeldorado.data
+package com.example.forecastappeldorado.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

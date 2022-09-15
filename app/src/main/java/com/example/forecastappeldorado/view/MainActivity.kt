@@ -9,9 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
-import com.example.forecastappeldorado.data.Search
+import com.example.forecastappeldorado.model.Search
 import com.example.forecastappeldorado.data.SearchDatabase
-import com.example.forecastappeldorado.data.SearchViewModel
+import com.example.forecastappeldorado.viewmodel.SearchViewModel
 import com.example.forecastappeldorado.databinding.ActivityMainBinding
 import com.example.forecastappeldorado.viewmodel.MainViewModel
 
