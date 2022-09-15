@@ -12,6 +12,6 @@ interface SearchDao {
     @Query("SELECT * FROM search_table ORDER BY id ASC")
     fun getAll():LiveData<List<Search>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(search: Search)
 }

@@ -8,12 +8,8 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
 import com.bumptech.glide.Glide
-import com.example.forecastappeldorado.HistoryActivity
-import com.example.forecastappeldorado.R
 import com.example.forecastappeldorado.data.Search
-import com.example.forecastappeldorado.data.SearchDao
 import com.example.forecastappeldorado.data.SearchDatabase
 import com.example.forecastappeldorado.data.SearchViewModel
 import com.example.forecastappeldorado.databinding.ActivityMainBinding
@@ -21,9 +17,6 @@ import com.example.forecastappeldorado.viewmodel.MainViewModel
 
 
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 private const val TAG = "MainActivity"
 
@@ -106,7 +99,6 @@ class MainActivity : AppCompatActivity() {
 
                 val search = Search(data.name.toString(), data.main.temp.toString() + "°C")
                 mSearchViewModel.searchInsert(search)
-
 
             }
         })

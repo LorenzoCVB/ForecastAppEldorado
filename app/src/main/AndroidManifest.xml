@@ -13,7 +13,7 @@
         android:theme="@style/Theme.ForecastAppEldorado"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".HistoryActivity"
+            android:name=".view.HistoryActivity"
             android:exported="false" />
         <activity
             android:name=".view.MainActivity"
