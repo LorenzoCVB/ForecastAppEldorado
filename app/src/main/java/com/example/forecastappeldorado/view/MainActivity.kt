@@ -13,19 +13,22 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.forecastappeldorado.App
+import com.example.forecastappeldorado.data.SearchDatabase
 import com.example.forecastappeldorado.databinding.ActivityMainBinding
 import com.example.forecastappeldorado.model.SearchModel
 import com.example.forecastappeldorado.viewmodel.MainViewModel
 import com.example.forecastappeldorado.viewmodel.SearchViewModel
 import com.example.forecastappeldorado.viewmodel.SearchViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import java.text.SimpleDateFormat
 import java.util.*
 
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
-//jhjj
+
     private val searchViewModel: SearchViewModel by viewModels {
         SearchViewModelFactory(
             (this.applicationContext as App).searchRepository,
@@ -39,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         ActivityMainBinding.inflate(layoutInflater)
     }
 
-    private lateinit var mSearchViewModel: SearchViewModel
+   // private lateinit var mSearchViewModel: SearchViewModel
 
     private lateinit var GET: SharedPreferences
     private lateinit var SET: SharedPreferences.Editor
@@ -47,14 +50,19 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val date = Calendar.getInstance().time
+        val formatter = SimpleDateFormat.getDateTimeInstance() //or use getDateInstance()
+        val formatedDate = formatter.format(date)
 
         GET = getSharedPreferences(packageName, MODE_PRIVATE)
         SET = GET.edit()
 
         viewmodel = androidx.lifecycle.ViewModelProviders.of(this).get(MainViewModel::class.java)
 
-        //mSearchViewModel = ViewModelProvider(this).get(SearchViewModel::class.java)
+       // mSearchViewModel = ViewModelProvider(this).get(SearchViewModel::class.java)
 
         var cName = GET.getString("cityName", "moscow")?.toLowerCase()
         edt_city_name.setText(cName)
@@ -115,7 +123,11 @@ class MainActivity : AppCompatActivity() {
                 tv_lon.text = data.coord.lon.toString()
 
                 val search = SearchModel(data.name.toString(), data.main.temp.toString() + "°C", currentDate)
+
+
+                //inserindo no DB mais de uma vez
                 searchViewModel.searchInsert(search)
+                searchViewModel.deleteDuplicates()
 
             }
         })

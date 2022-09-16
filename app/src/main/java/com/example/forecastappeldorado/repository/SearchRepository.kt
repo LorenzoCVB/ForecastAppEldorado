@@ -10,4 +10,8 @@ class SearchRepository(private val searchDao: SearchDao) {
     suspend fun insert(search: SearchModel){
         searchDao.insert(search)
     }
+
+    suspend fun deleteDuplicates(){
+        searchDao.deleteDuplicates()
+    }
 }

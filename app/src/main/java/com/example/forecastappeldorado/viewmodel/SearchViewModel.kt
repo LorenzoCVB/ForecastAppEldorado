@@ -11,20 +11,19 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 
-class SearchViewModel(private val searchRep: SearchRepository, application: Application): AndroidViewModel(application) {
-    val getAllSearch:LiveData<List<SearchModel>>
-    private val searchRepository: SearchRepository
-
-    init {
-        val dao = SearchDatabase.getDatabase(application, applicationScope = CoroutineScope(SupervisorJob())).getSearchDao()
-        searchRepository = SearchRepository(dao)
-        getAllSearch = searchRepository.getAllSearch
-    }
+class SearchViewModel(private val searchRepository: SearchRepository, application: Application): AndroidViewModel(application) {
+    val allSearches = searchRepository.getAllSearch
 
     fun searchInsert(search: SearchModel) = viewModelScope.launch {
         searchRepository.insert(search)
     }
+
+    fun deleteDuplicates() = viewModelScope.launch {
+        searchRepository.deleteDuplicates()
+    }
 }
+
+
 
 class SearchViewModelFactory(
     private val repository: SearchRepository,

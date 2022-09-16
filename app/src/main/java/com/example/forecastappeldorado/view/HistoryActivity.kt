@@ -3,10 +3,8 @@ package com.example.forecastappeldorado.view
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.forecastappeldorado.App
-import com.example.forecastappeldorado.R
 import com.example.forecastappeldorado.adapter.ListAdapter
 import com.example.forecastappeldorado.databinding.ActivityHistoryBinding
 import com.example.forecastappeldorado.viewmodel.SearchViewModel
@@ -37,7 +35,7 @@ class HistoryActivity : AppCompatActivity() {
         recyclerView.adapter = searchAdapter
 
         //searchViewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(application))[SearchViewModel::class.java]
-        searchViewModel.getAllSearch.observe(this) { list ->
+        searchViewModel.allSearches.observe(this) { list ->
             list?.let {
                 searchAdapter.updateList(it)
             }

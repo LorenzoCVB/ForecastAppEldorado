@@ -13,6 +13,11 @@ interface SearchDao {
     @Query("SELECT * FROM search_table ORDER BY id ASC")
     fun getAll():LiveData<List<SearchModel>>
 
+    @Query("DELETE FROM search_table WHERE id NOT IN (SELECT MIN(id) FROM search_table GROUP BY city_name, date, temperature)")
+    suspend fun deleteDuplicates()
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(search: SearchModel)
+
+
 }
