@@ -17,7 +17,7 @@ class WeatherAPIService {
 
         //A call adapter which uses RxJava 2 for creating observables.
         // Adding this class to Retrofit allows you to return an Observable, Flowable, Single, Completable or Maybe from service methods.
-        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create()) //resolveu o problema do primeiro aplicativo
         .build()
         .create(WeatherAPI::class.java)
 

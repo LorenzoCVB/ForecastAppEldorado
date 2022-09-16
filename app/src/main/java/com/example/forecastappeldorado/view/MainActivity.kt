@@ -5,10 +5,13 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import com.example.forecastappeldorado.R
 import com.example.forecastappeldorado.model.SearchModel
 import com.example.forecastappeldorado.data.SearchDatabase
 import com.example.forecastappeldorado.viewmodel.SearchViewModel
@@ -70,6 +73,7 @@ class MainActivity : AppCompatActivity() {
 
         img_search_city.setOnClickListener {
             val cityName = edt_city_name.text.toString()
+            edt_city_name.onEditorAction(EditorInfo.IME_ACTION_DONE)
             SET.putString("cityName", cityName)
             SET.apply()
             viewmodel.refreshData(cityName)
