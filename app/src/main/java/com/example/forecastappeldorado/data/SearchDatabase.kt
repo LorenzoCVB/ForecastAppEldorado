@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.forecastappeldorado.model.SearchModel
+import kotlinx.coroutines.CoroutineScope
 
 @Database(entities = [SearchModel::class], version = 1)
 abstract class SearchDatabase : RoomDatabase(){
@@ -16,7 +17,7 @@ abstract class SearchDatabase : RoomDatabase(){
         @Volatile
         private var INSTANCE : SearchDatabase? = null
 
-        fun getDatabase(context: Context): SearchDatabase{
+        fun getDatabase(context: Context, applicationScope: CoroutineScope): SearchDatabase{
             return INSTANCE?: synchronized(this){
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
@@ -27,5 +28,6 @@ abstract class SearchDatabase : RoomDatabase(){
                 return instance
             }
         }
+
     }
 }

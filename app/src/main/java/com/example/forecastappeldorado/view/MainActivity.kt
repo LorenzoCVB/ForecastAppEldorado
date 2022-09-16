@@ -1,59 +1,60 @@
 package com.example.forecastappeldorado.view
 
+
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.EditText
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
-import com.example.forecastappeldorado.R
-import com.example.forecastappeldorado.model.SearchModel
-import com.example.forecastappeldorado.data.SearchDatabase
-import com.example.forecastappeldorado.viewmodel.SearchViewModel
+import com.example.forecastappeldorado.App
 import com.example.forecastappeldorado.databinding.ActivityMainBinding
+import com.example.forecastappeldorado.model.SearchModel
 import com.example.forecastappeldorado.viewmodel.MainViewModel
-
-
+import com.example.forecastappeldorado.viewmodel.SearchViewModel
+import com.example.forecastappeldorado.viewmodel.SearchViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
+//jhjj
+    private val searchViewModel: SearchViewModel by viewModels {
+        SearchViewModelFactory(
+            (this.applicationContext as App).searchRepository,
+            this.applicationContext as App
+        )
+    }
 
     private lateinit var viewmodel: MainViewModel
 
-    private lateinit var appDB : SearchDatabase
-    lateinit var binding : ActivityMainBinding
+    private val binding: ActivityMainBinding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
 
     private lateinit var mSearchViewModel: SearchViewModel
 
     private lateinit var GET: SharedPreferences
     private lateinit var SET: SharedPreferences.Editor
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val date = Calendar.getInstance().time
-        val formatter = SimpleDateFormat.getDateTimeInstance() //or use getDateInstance()
-        val formatedDate = formatter.format(date)
 
         GET = getSharedPreferences(packageName, MODE_PRIVATE)
         SET = GET.edit()
 
         viewmodel = androidx.lifecycle.ViewModelProviders.of(this).get(MainViewModel::class.java)
 
-        mSearchViewModel = ViewModelProvider(this).get(SearchViewModel::class.java)
+        //mSearchViewModel = ViewModelProvider(this).get(SearchViewModel::class.java)
 
         var cName = GET.getString("cityName", "moscow")?.toLowerCase()
         edt_city_name.setText(cName)
@@ -105,7 +106,7 @@ class MainActivity : AppCompatActivity() {
                 Glide.with(this)
                     .load("https://openweathermap.org/img/wn/" + data.weather.get(0).icon + "@2x.png")
                     .into(img_weather_pictures)
-                
+
                 //atribuindo os valores das respostas
                 tv_degree.text = data.main.temp.toString() + "°C"
                 tv_humidity.text = data.main.humidity.toString() + "%"
@@ -114,7 +115,7 @@ class MainActivity : AppCompatActivity() {
                 tv_lon.text = data.coord.lon.toString()
 
                 val search = SearchModel(data.name.toString(), data.main.temp.toString() + "°C", currentDate)
-                mSearchViewModel.searchInsert(search)
+                searchViewModel.searchInsert(search)
 
             }
         })
