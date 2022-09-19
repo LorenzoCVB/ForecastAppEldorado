@@ -23,8 +23,6 @@ class SearchViewModel(private val searchRepository: SearchRepository, applicatio
     }
 }
 
-
-
 class SearchViewModelFactory(
     private val repository: SearchRepository,
     private val app: Application

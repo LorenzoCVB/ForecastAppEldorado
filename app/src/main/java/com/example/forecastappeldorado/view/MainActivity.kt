@@ -10,24 +10,24 @@ import android.view.inputmethod.EditorInfo
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.forecastappeldorado.App
-import com.example.forecastappeldorado.data.SearchDatabase
 import com.example.forecastappeldorado.databinding.ActivityMainBinding
 import com.example.forecastappeldorado.model.SearchModel
 import com.example.forecastappeldorado.viewmodel.MainViewModel
+import com.example.forecastappeldorado.viewmodel.MainViewModelFactory
 import com.example.forecastappeldorado.viewmodel.SearchViewModel
 import com.example.forecastappeldorado.viewmodel.SearchViewModelFactory
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import java.text.SimpleDateFormat
 import java.util.*
 
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
+
+    private val binding: ActivityMainBinding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
 
     private val searchViewModel: SearchViewModel by viewModels {
         SearchViewModelFactory(
@@ -36,66 +36,56 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private lateinit var viewmodel: MainViewModel
-
-    private val binding: ActivityMainBinding by lazy {
-        ActivityMainBinding.inflate(layoutInflater)
+    private val viewModel: MainViewModel by viewModels {
+        MainViewModelFactory(
+            (this.applicationContext as App).mainRepository,
+            this.applicationContext as App
+        )
     }
-
-   // private lateinit var mSearchViewModel: SearchViewModel
 
     private lateinit var GET: SharedPreferences
     private lateinit var SET: SharedPreferences.Editor
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val date = Calendar.getInstance().time
-        val formatter = SimpleDateFormat.getDateTimeInstance() //or use getDateInstance()
-        val formatedDate = formatter.format(date)
 
         GET = getSharedPreferences(packageName, MODE_PRIVATE)
         SET = GET.edit()
 
-        viewmodel = androidx.lifecycle.ViewModelProviders.of(this).get(MainViewModel::class.java)
-
-       // mSearchViewModel = ViewModelProvider(this).get(SearchViewModel::class.java)
-
-        var cName = GET.getString("cityName", "moscow")?.toLowerCase()
-        edt_city_name.setText(cName)
-        viewmodel.refreshData(cName!!)
+        val cName = GET.getString("cityName", "moscow")?.lowercase()
         getLiveDataAndAddToDB()
 
-        swipe_refresh_layout.setOnRefreshListener {
-            ll_data.visibility = View.GONE
-            tv_error.visibility = View.GONE
-            pb_loading.visibility = View.GONE
+        with(binding) {
+            if (cName != null) {
+                edtCityName.setText(cName)
+                viewModel.getDataFromAPI(cName)
+                swipeRefreshLayout.setOnRefreshListener {
+                    llData.visibility = View.GONE
+                    tvError.visibility = View.GONE
+                    pbLoading.visibility = View.GONE
 
-            var cityName = GET.getString("cityName", cName)?.toLowerCase()
-            edt_city_name.setText(cityName)
-            viewmodel.refreshData(cityName!!)
-            swipe_refresh_layout.isRefreshing = false
+                    val cityName = GET.getString("cityName", cName)?.lowercase()
+                    edtCityName.setText(cityName)
+                    viewModel.getDataFromAPI(cName)
+                    swipeRefreshLayout.isRefreshing = false
+                }
+            }
+
+            imgSearchCity.setOnClickListener {
+                val cityName = edtCityName.text.toString()
+                edtCityName.onEditorAction(EditorInfo.IME_ACTION_DONE)
+                SET.putString("cityName", cityName)
+                SET.apply()
+                viewModel.getDataFromAPI(cityName)
+                Log.i(TAG, "onCreate: " + cityName)
+            }
+
+            imgHistory.setOnClickListener {
+                val intent = Intent(applicationContext, HistoryActivity::class.java)
+                startActivity(intent)
+            }
         }
-
-        img_search_city.setOnClickListener {
-            val cityName = edt_city_name.text.toString()
-            edt_city_name.onEditorAction(EditorInfo.IME_ACTION_DONE)
-            SET.putString("cityName", cityName)
-            SET.apply()
-            viewmodel.refreshData(cityName)
-            getLiveDataAndAddToDB()
-            Log.i(TAG, "onCreate: " + cityName)
-        }
-
-
-        img_history.setOnClickListener {
-            val intent = Intent(applicationContext, HistoryActivity::class.java)
-            startActivity(intent)
-        }
-
     }
 
     private fun getLiveDataAndAddToDB() {
@@ -103,35 +93,33 @@ class MainActivity : AppCompatActivity() {
         val sdf = SimpleDateFormat("dd/M/yyyy")
         val currentDate = sdf.format(Date())
 
-
-        viewmodel.weather_data.observe(this, Observer { data ->
+        viewModel.weatherData.observe(this, Observer { data ->
             data?.let {
-                ll_data.visibility = View.VISIBLE
+                with(binding) {
+                    llData.visibility = View.VISIBLE
 
-                tv_city_code.text = data.sys.country.toString()
-                tv_city_name.text = data.name.toString()
+                    tvCityCode.text = data.sys.country.toString()
+                    tvCityName.text = data.name.toString()
 
-                Glide.with(this)
-                    .load("https://openweathermap.org/img/wn/" + data.weather.get(0).icon + "@2x.png")
-                    .into(img_weather_pictures)
+                    Glide.with(applicationContext)
+                        .load("https://openweathermap.org/img/wn/" + data.weather.get(0).icon + "@2x.png")
+                        .into(imgWeatherPictures)
 
-                //atribuindo os valores das respostas
-                tv_degree.text = data.main.temp.toString() + "°C"
-                tv_humidity.text = data.main.humidity.toString() + "%"
-                tv_wind_speed.text = data.wind.speed.toString()
-                tv_lat.text = data.coord.lat.toString()
-                tv_lon.text = data.coord.lon.toString()
+                    //atribuindo os valores das respostas
+                    tvDegree.text = data.main.temp.toString() + "°C"
+                    tvHumidity.text = data.main.humidity.toString() + "%"
+                    tvWindSpeed.text = data.wind.speed.toString()
+                    tvLat.text = data.coord.lat.toString()
+                    tvLon.text = data.coord.lon.toString()
+                }
 
-                val search = SearchModel(data.name.toString(), data.main.temp.toString() + "°C", currentDate)
-
+                val search =
+                    SearchModel(data.name, data.main.temp.toString() + "°C", currentDate)
 
                 //inserindo no DB mais de uma vez
                 searchViewModel.searchInsert(search)
                 searchViewModel.deleteDuplicates()
-
             }
         })
-
-
     }
 }

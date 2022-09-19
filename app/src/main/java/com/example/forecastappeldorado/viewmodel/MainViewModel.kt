@@ -1,56 +1,32 @@
 package com.example.forecastappeldorado.viewmodel
 
 import android.app.Application
-import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
+import com.example.forecastappeldorado.model.Main
 import com.example.forecastappeldorado.model.WeatherModel
-import com.example.forecasteldorado.service.WeatherAPIService
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.observers.DisposableSingleObserver
-import io.reactivex.schedulers.Schedulers
+import com.example.forecastappeldorado.repository.MainRepository
+import java.lang.IllegalArgumentException
 
 private const val TAG = "MainViewModel"
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class MainViewModel(private val mainRepository: MainRepository, application: Application) : AndroidViewModel(application) {
 
-    private val weatherApiService = WeatherAPIService()
-    private val disposable = CompositeDisposable()
+    val weatherData: MutableLiveData<WeatherModel> = mainRepository.weatherData
 
-    val weather_data = MutableLiveData<WeatherModel>()
-    val weather_error = MutableLiveData<Boolean>()
-    val weather_loading = MutableLiveData<Boolean>()
-
-    fun refreshData(cityName: String) {
-        getDataFromAPI(cityName)
+    fun getDataFromAPI(cityName: String) {
+        mainRepository.getDataFromAPI(cityName)
     }
+}
 
-    private fun getDataFromAPI(cityName: String) {
-
-        weather_loading.value = true
-        disposable.add(
-            weatherApiService.getDataService(cityName)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(object : DisposableSingleObserver<WeatherModel>() {
-
-                    override fun onSuccess(t: WeatherModel) {
-                        weather_data.value = t
-                        weather_error.value = false
-                        weather_loading.value = false
-                        Log.d(TAG, "onSuccess: Success")
-                    }
-
-                    override fun onError(e: Throwable) {
-                        weather_error.value = true
-                        weather_loading.value = false
-                        Log.e(TAG, "onError: " + e)
-                    }
-
-                })
-        )
-
+class MainViewModelFactory(
+    private val repository: MainRepository,
+    private val app: Application
+) : ViewModelProvider.Factory{
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if(modelClass.isAssignableFrom(MainViewModel::class.java)){
+            @Suppress("UNCHECKED_CAST")
+            return MainViewModel(repository, app) as T
+        }
+        throw IllegalArgumentException("unknown ViewModel class")
     }
-
 }
